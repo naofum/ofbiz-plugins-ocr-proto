@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<entity-engine-xml>
+
+    <!-- Demo Tesseract configuration -->
+    <OcrEngineConfig ocrEngineConfigId="OCR_CFG_TESS_DEMO"
+                     engineTypeId="OCR_ENGINE_TESSERACT"
+                     configName="Demo Tesseract Config"
+                     tessDataPath=""
+                     language="eng"
+                     description="Demo Tesseract configuration. Set tessDataPath to a valid path to use."/>
+
+    <!-- Demo OpenAI compatible configuration -->
+    <OcrEngineConfig ocrEngineConfigId="OCR_CFG_OPENAI_DEMO"
+                     engineTypeId="OCR_ENGINE_OPENAI"
+                     configName="Demo OpenAI Config"
+                     baseUrl="https://api.openai.com/v1"
+                     apiKey="REPLACE_WITH_YOUR_API_KEY"
+                     modelName="gpt-4o"
+                     description="Demo OpenAI compatible configuration. Replace apiKey before use."/>
+
+    <!-- Demo mapping definition for invoice extraction -->
+    <OcrMappingDefinition ocrMappingDefinitionId="OCR_MAP_INVOICE_DEMO"
+                          definitionName="Invoice Extraction"
+                          prompt="Extract the following fields from this invoice image: invoiceNumber, invoiceDate (yyyy-MM-dd), vendorName, totalAmount (numeric only), taxAmount (numeric only). Return the result as a JSON object."
+                          outputFields="[{&quot;name&quot;:&quot;invoiceNumber&quot;,&quot;type&quot;:&quot;String&quot;},{&quot;name&quot;:&quot;invoiceDate&quot;,&quot;type&quot;:&quot;String&quot;},{&quot;name&quot;:&quot;vendorName&quot;,&quot;type&quot;:&quot;String&quot;},{&quot;name&quot;:&quot;totalAmount&quot;,&quot;type&quot;:&quot;BigDecimal&quot;},{&quot;name&quot;:&quot;taxAmount&quot;,&quot;type&quot;:&quot;BigDecimal&quot;}]"
+                          description="Demo mapping definition for extracting common invoice fields."/>
+
+</entity-engine-xml>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<screens xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/widget-screen.xsd">
+
+    <screen name="main">
+        <section>
+            <actions>
+                <set field="titleProperty" value="OcrApplication"/>
+                <set field="headerItem" value="main"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <container>
+                            <label style="h1" text="${uiLabelMap.OcrApplication}"/>
+                            <link target="UploadOcrFile" text="${uiLabelMap.OcrNewOcrRequest}" style="buttontext"/>
+                            <link target="FindOcrRequests" text="${uiLabelMap.OcrOcrRequests}" style="buttontext"/>
+                        </container>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="UploadOcrFile">
+        <section>
+            <actions>
+                <set field="titleProperty" value="OcrNewOcrRequest"/>
+                <set field="headerItem" value="ocr"/>
+                <set field="persistResult" value="N"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <container>
+                            <label style="h1" text="${uiLabelMap.OcrNewOcrRequest}"/>
+                            <screenlet title="${uiLabelMap.OcrNewOcrRequest}">
+                                <include-form name="UploadOcrFileForm" location="component://ocr/widget/OcrForms.xml"/>
+                            </screenlet>
+                        </container>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="OcrResult">
+        <section>
+            <actions>
+                <set field="titleProperty" value="OcrRawText"/>
+                <set field="headerItem" value="ocr"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <container>
+                            <label style="h1" text="${uiLabelMap.OcrRawText}"/>
+                            <label text="${rawText}" style="alert"/>
+                        </container>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="FindOcrRequests">
+        <section>
+            <actions>
+                <set field="titleProperty" value="OcrOcrRequests"/>
+                <set field="headerItem" value="ocr"/>
+                <entity-condition entity-name="OcrRequest" list="listIt">
+                    <order-by field-name="-createdTxStamp"/>
+                </entity-condition>
+            </actions>
+            <widgets>
+                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <container>
+                            <label style="h1" text="${uiLabelMap.OcrOcrRequests}"/>
+                            <include-form name="FindOcrRequests" location="component://ocr/widget/OcrForms.xml"/>
+                        </container>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="EditOcrRequest">
+        <section>
+            <actions>
+                <set field="titleProperty" value="OcrOcrRequests"/>
+                <set field="headerItem" value="ocr"/>
+                <entity-one entity-name="OcrRequest" value-field="ocrRequest">
+                    <field-map field-name="ocrRequestId" from-field="parameters.ocrRequestId"/>
+                </entity-one>
+                <entity-condition entity-name="OcrRequestResult" list="ocrResults">
+                    <condition-list>
+                        <condition-expr field-name="ocrRequestId" from-field="parameters.ocrRequestId"/>
+                    </condition-list>
+                </entity-condition>
+            </actions>
+            <widgets>
+                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <container>
+                            <label style="h1" text="OCR Request ${parameters.ocrRequestId}"/>
+                            <label text="Engine: ${ocrRequest.engineTypeId}" style="alert"/>
+                            <label text="Status: ${ocrRequest.statusId}" style="alert"/>
+                            <section>
+                                <condition>
+                                    <not><empty field="ocrResults"/></not>
+                                </condition>
+                                <widgets>
+                                    <section>
+                                        <condition>
+                                            <not><empty field="ocrResults[0].rawText"/></not>
+                                        </condition>
+                                        <widgets>
+                                            <label style="h2" text="${uiLabelMap.OcrRawText}"/>
+                                            <label text="${ocrResults[0].rawText}" style="alert"/>
+                                        </widgets>
+                                    </section>
+                                    <section>
+                                        <condition>
+                                            <not><empty field="ocrResults[0].structuredResult"/></not>
+                                        </condition>
+                                        <widgets>
+                                            <label style="h2" text="${uiLabelMap.OcrStructuredResult}"/>
+                                            <label text="${ocrResults[0].structuredResult}" style="alert"/>
+                                        </widgets>
+                                    </section>
+                                </widgets>
+                            </section>
+                        </container>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+</screens>

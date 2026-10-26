@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/ofbiz-properties.xsd">
+
+    <property key="OcrApplication">
+        <value xml:lang="en">OCR Application</value>
+        <value xml:lang="ja">OCR アプリケーション</value>
+    </property>
+    <property key="OcrOcrRequests">
+        <value xml:lang="en">OCR Requests</value>
+        <value xml:lang="ja">OCR 実行履歴</value>
+    </property>
+    <property key="OcrNewOcrRequest">
+        <value xml:lang="en">New OCR Request</value>
+        <value xml:lang="ja">新規 OCR 実行</value>
+    </property>
+    <property key="OcrEngineType">
+        <value xml:lang="en">Engine Type</value>
+        <value xml:lang="ja">エンジン種別</value>
+    </property>
+    <property key="OcrLanguage">
+        <value xml:lang="en">Language</value>
+        <value xml:lang="ja">言語</value>
+    </property>
+    <property key="OcrMappingDefinition">
+        <value xml:lang="en">Mapping Definition</value>
+        <value xml:lang="ja">マッピング定義</value>
+    </property>
+    <property key="OcrRawText">
+        <value xml:lang="en">Raw Text</value>
+        <value xml:lang="ja">抽出テキスト</value>
+    </property>
+    <property key="OcrStructuredResult">
+        <value xml:lang="en">Structured Result</value>
+        <value xml:lang="ja">構造化結果</value>
+    </property>
+    <property key="OcrPersistResult">
+        <value xml:lang="en">Persist Result</value>
+        <value xml:lang="ja">結果を保存</value>
+    </property>
+    <property key="OcrRunOcr">
+        <value xml:lang="en">Run OCR</value>
+        <value xml:lang="ja">OCR 実行</value>
+    </property>
+    <property key="OcrFileUpload">
+        <value xml:lang="en">File Upload</value>
+        <value xml:lang="ja">ファイルアップロード</value>
+    </property>
+    <property key="OcrInvoiceExtraction">
+        <value xml:lang="en">Invoice Extraction</value>
+        <value xml:lang="ja">請求書項目抽出</value>
+    </property>
+    <property key="OcrPermissionError">
+        <value xml:lang="en">You do not have permission to perform this OCR operation.</value>
+        <value xml:lang="ja">この OCR 操作を実行する権限がありません。</value>
+    </property>
+    <property key="OcrPermissionMainActionAttributeMissing">
+        <value xml:lang="en">The mainAction attribute is required for OCR permission check.</value>
+        <value xml:lang="ja">OCR 権限チェックには mainAction 属性が必要です。</value>
+    </property>
+
+</resource>

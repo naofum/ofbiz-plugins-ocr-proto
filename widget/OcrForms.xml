@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/widget-form.xsd">
+
+    <form name="UploadOcrFileForm" type="single" target="RunOcr" title=""
+          header-row-style="header-row" default-table-style="basic-table">
+        <field name="contentId" title="${uiLabelMap.OcrFileUpload}" tooltip="Upload a file first to get a Content ID">
+            <text size="40"/>
+        </field>
+        <field name="engineTypeId" title="${uiLabelMap.OcrEngineType}">
+            <drop-down allow-empty="false">
+                <entity-options entity-name="Enumeration" key-field-name="enumId" description="${description}">
+                    <entity-constraint field-name="enumTypeId" operator="equals" value="OCR_ENGINE_TYPE"/>
+                    <entity-order-by field-name="description"/>
+                </entity-options>
+            </drop-down>
+        </field>
+        <field name="language" title="${uiLabelMap.OcrLanguage}">
+            <text size="10"/>
+        </field>
+        <field name="persistResult" title="${uiLabelMap.OcrPersistResult}">
+            <drop-down allow-empty="false">
+                <option key="N" description="No"/>
+                <option key="Y" description="Yes"/>
+            </drop-down>
+        </field>
+        <field name="submitButton" title="${uiLabelMap.OcrRunOcr}">
+            <submit/>
+        </field>
+    </form>
+
+    <form name="FindOcrRequests" type="list" list-name="listIt" paginate-target="FindOcrRequests"
+          header-row-style="header-row" default-table-style="basic-table">
+        <row-actions>
+            <entity-one entity-name="OcrRequest" value-field="ocrRequest"/>
+        </row-actions>
+        <field name="ocrRequestId" title="Request ID">
+            <hyperlink target="EditOcrRequest" description="${ocrRequestId}" target-type="inter-app">
+                <parameter param-name="ocrRequestId" from-field="ocrRequestId"/>
+            </hyperlink>
+        </field>
+        <field name="engineTypeId" title="${uiLabelMap.OcrEngineType}">
+            <display/>
+        </field>
+        <field name="statusId" title="Status">
+            <display/>
+        </field>
+        <field name="createdTxStamp" title="Created">
+            <display/>
+        </field>
+    </form>
+
+</forms>

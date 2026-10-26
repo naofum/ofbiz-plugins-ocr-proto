@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<entitymodel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/entitymodel.xsd">
+
+    <title>OCR Plugin Entities</title>
+    <description>Entity model for the OCR plugin</description>
+    <version>1.0</version>
+
+    <entity entity-name="OcrRequest"
+            package-name="org.apache.ofbiz.ocr"
+            title="OCR Request">
+        <field name="ocrRequestId" type="id">
+            <description>Unique identifier for the OCR request</description>
+        </field>
+        <field name="contentId" type="id">
+            <description>Reference to the Content/DataResource containing the input file</description>
+        </field>
+        <field name="engineTypeId" type="id">
+            <description>OCR engine type: TESSERACT, OPENAI, BOTH</description>
+        </field>
+        <field name="mappingDefinitionId" type="id">
+            <description>Optional mapping definition for structured data extraction</description>
+        </field>
+        <field name="inlinePrompt" type="very-long">
+            <description>Inline prompt used when no mapping definition is specified</description>
+        </field>
+        <field name="language" type="short-varchar">
+            <description>Language code for Tesseract (e.g. eng, jpn)</description>
+        </field>
+        <field name="statusId" type="id">
+            <description>Status of the OCR request</description>
+        </field>
+        <field name="persistResult" type="indicator">
+            <description>Whether to persist the result (Y/N)</description>
+        </field>
+        <field name="createdByUserLoginId" type="id-vlong">
+            <description>User login that created the request</description>
+        </field>
+        <field name="createdTxStamp" type="date-time"/>
+        <field name="lastUpdatedTxStamp" type="date-time"/>
+        <prim-key field="ocrRequestId"/>
+        <relation type="one" fk-name="OCR_REQ_CONTENT" rel-entity-name="Content">
+            <key-map field-name="contentId"/>
+        </relation>
+        <relation type="one" fk-name="OCR_REQ_MAP_DEF" rel-entity-name="OcrMappingDefinition">
+            <key-map field-name="mappingDefinitionId" rel-field-name="ocrMappingDefinitionId"/>
+        </relation>
+        <relation type="one" fk-name="OCR_REQ_USER_LOGIN" rel-entity-name="UserLogin">
+            <key-map field-name="createdByUserLoginId" rel-field-name="userLoginId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OcrRequestResult"
+            package-name="org.apache.ofbiz.ocr"
+            title="OCR Request Result">
+        <field name="ocrRequestResultId" type="id">
+            <description>Unique identifier for the OCR result</description>
+        </field>
+        <field name="ocrRequestId" type="id">
+            <description>Reference to the parent OCR request</description>
+        </field>
+        <field name="rawText" type="very-long">
+            <description>Raw text result</description>
+        </field>
+        <field name="structuredResult" type="very-long">
+            <description>Structured data result as JSON string</description>
+        </field>
+        <field name="confidence" type="numeric">
+            <description>Confidence score if available</description>
+        </field>
+        <field name="errorMessage" type="description">
+            <description>Error message if execution failed</description>
+        </field>
+        <field name="createdTxStamp" type="date-time"/>
+        <field name="lastUpdatedTxStamp" type="date-time"/>
+        <prim-key field="ocrRequestResultId"/>
+        <relation type="one" fk-name="OCR_RES_REQUEST" rel-entity-name="OcrRequest">
+            <key-map field-name="ocrRequestId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OcrEngineConfig"
+            package-name="org.apache.ofbiz.ocr"
+            title="OCR Engine Configuration">
+        <field name="ocrEngineConfigId" type="id">
+            <description>Unique identifier for the engine configuration</description>
+        </field>
+        <field name="engineTypeId" type="id">
+            <description>Engine type: TESSERACT or OPENAI</description>
+        </field>
+        <field name="configName" type="long-varchar">
+            <description>Human readable configuration name</description>
+        </field>
+        <field name="baseUrl" type="long-varchar">
+            <description>Base URL for OpenAI compatible API</description>
+        </field>
+        <field name="apiKey" type="long-varchar">
+            <description>API key for OpenAI compatible API (plain text in Step 0)</description>
+        </field>
+        <field name="modelName" type="short-varchar">
+            <description>Model name for OpenAI compatible API</description>
+        </field>
+        <field name="tessDataPath" type="long-varchar">
+            <description>Path to Tesseract language data</description>
+        </field>
+        <field name="language" type="short-varchar">
+            <description>Default language code</description>
+        </field>
+        <field name="description" type="description">
+            <description>Description of the configuration</description>
+        </field>
+        <field name="createdTxStamp" type="date-time"/>
+        <field name="lastUpdatedTxStamp" type="date-time"/>
+        <prim-key field="ocrEngineConfigId"/>
+    </entity>
+
+    <entity entity-name="OcrMappingDefinition"
+            package-name="org.apache.ofbiz.ocr"
+            title="OCR Mapping Definition">
+        <field name="ocrMappingDefinitionId" type="id">
+            <description>Unique identifier for the mapping definition</description>
+        </field>
+        <field name="definitionName" type="long-varchar">
+            <description>Human readable definition name</description>
+        </field>
+        <field name="prompt" type="very-long">
+            <description>Prompt sent to the AI model</description>
+        </field>
+        <field name="outputFields" type="very-long">
+            <description>Expected output fields as JSON</description>
+        </field>
+        <field name="description" type="description">
+            <description>Description of the mapping definition</description>
+        </field>
+        <field name="createdTxStamp" type="date-time"/>
+        <field name="lastUpdatedTxStamp" type="date-time"/>
+        <prim-key field="ocrMappingDefinitionId"/>
+    </entity>
+
+</entitymodel>
