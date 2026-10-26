@@ -37,4 +37,7 @@ under the License.
     <SecurityGroupPermission groupId="OCR_ADMINISTRATOR" permissionId="OCR_CREATE" fromDate="2000-01-01 00:00:00.000"/>
     <SecurityGroupPermission groupId="OCR_ADMINISTRATOR" permissionId="OCR_VIEW" fromDate="2000-01-01 00:00:00.000"/>
 
+    <!-- super user -->
+    <SecurityGroupPermission groupId="SUPER" permissionId="OCR_ADMIN" fromDate="2001-05-13 12:00:00.000"/>
+
 </entity-engine-xml>

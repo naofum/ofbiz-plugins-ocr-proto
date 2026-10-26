@@ -19,22 +19,29 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<decorator-screen name="main-decorator" default-screen-name="main"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/widget-screen.xsd">
-    <decorator-section name="body">
-        <actions>
-            <set field="headerItem" value="ocr"/>
-            <set field="titleProperty" value="OcrApplication"/>
-            <set field="layoutSettings.companyName" value="${uiLabelMap.OcrApplication}" global="true"/>
-            <set field="layoutSettings.companySubtitle" value="OCR" global="true"/>
-        </actions>
-        <widgets>
-            <decorator-screen name="main-decorator" location="component://common/widget/CommonScreens.xml">
-                <decorator-section name="body">
-                    <decorator-section-include name="body"/>
-                </decorator-section>
-            </decorator-screen>
-        </widgets>
-    </decorator-section>
-</decorator-screen>
+<screens xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://ofbiz.apache.org/Widget-Screen"
+        xsi:schemaLocation="http://ofbiz.apache.org/Widget-Screen http://ofbiz.apache.org/dtds/widget-screen.xsd">
+
+    <screen name="main-decorator">
+        <section>
+            <actions>
+                <property-map resource="OcrUiLabels" map-name="uiLabelMap" global="true"/>
+                <property-map resource="CommonUiLabels" map-name="uiLabelMap" global="true"/>
+
+                <set field="layoutSettings.companyName" value="${uiLabelMap.OcrApplication}" global="true"/>
+                <set field="layoutSettings.companySubtitle" value="OCR" global="true"/>
+                <set field="activeApp" value="ocr" global="true"/>
+                <set field="applicationMenuName" value="OcrAppBar" global="true"/>
+                <set field="applicationMenuLocation" value="${parameters.mainMenuLocation}" global="true"/>
+                <set field="applicationTitle" value="${uiLabelMap.OcrApplication}" global="true"/>
+                <set field="helpAnchor" value="_apache_ofbiz_plugins" global="true"/>
+                <set field="headerItem" value="ocr"/>
+            </actions>
+            <widgets>
+                <include-screen name="ApplicationDecorator" location="component://commonext/widget/CommonScreens.xml"/>
+            </widgets>
+        </section>
+    </screen>
+
+</screens>

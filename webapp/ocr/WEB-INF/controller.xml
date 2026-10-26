@@ -19,12 +19,13 @@ under the License.
 -->
 
 <site-conf xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/site-conf.xsd">
-    <description>OCR Plugin Site Configuration</description>
-    <owner>Apache OFBiz</owner>
-
+        xmlns="http://ofbiz.apache.org/Site-Conf"
+        xsi:schemaLocation="http://ofbiz.apache.org/Site-Conf http://ofbiz.apache.org/dtds/site-conf.xsd">
     <include location="component://common/webcommon/WEB-INF/common-controller.xml"/>
     <include location="component://common/webcommon/WEB-INF/portal-controller.xml"/>
+
+    <description>OCR Plugin Site Configuration</description>
+    <owner>Apache OFBiz</owner>
 
     <request-map uri="main">
         <security https="false" auth="true"/>
@@ -38,9 +39,16 @@ under the License.
 
     <request-map uri="RunOcr">
         <security https="false" auth="true"/>
-        <event type="service" invoke="ocrImageToText"/>
-        <response name="success" type="view" value="OcrResult"/>
+        <event type="java" path="org.apache.ofbiz.ocr.webapp.OcrUploadEvents" invoke="uploadAndRun"/>
+        <response name="success" type="view" value="UploadOcrFile"/>
         <response name="error" type="view" value="UploadOcrFile"/>
+    </request-map>
+
+    <request-map uri="OcrContentStream">
+        <security https="false" auth="true"/>
+        <event type="java" path="org.apache.ofbiz.ocr.webapp.OcrContentStreamEvents" invoke="serveContent"/>
+        <response name="success" type="none"/>
+        <response name="error" type="none"/>
     </request-map>
 
     <request-map uri="FindOcrRequests">
@@ -55,7 +63,6 @@ under the License.
 
     <view-map name="main" type="screen" page="component://ocr/widget/OcrScreens.xml#main"/>
     <view-map name="UploadOcrFile" type="screen" page="component://ocr/widget/OcrScreens.xml#UploadOcrFile"/>
-    <view-map name="OcrResult" type="screen" page="component://ocr/widget/OcrScreens.xml#OcrResult"/>
     <view-map name="FindOcrRequests" type="screen" page="component://ocr/widget/OcrScreens.xml#FindOcrRequests"/>
     <view-map name="EditOcrRequest" type="screen" page="component://ocr/widget/OcrScreens.xml#EditOcrRequest"/>
 

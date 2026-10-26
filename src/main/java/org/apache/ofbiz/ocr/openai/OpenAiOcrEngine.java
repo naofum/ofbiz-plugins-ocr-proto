@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -77,9 +78,20 @@ public class OpenAiOcrEngine implements OcrEngine {
 
     @Override
     public OcrResult recognizeText(OcrInput input) throws OcrException {
-        OcrMappingDefinition mapping = new OcrMappingDefinition();
-        mapping.setPrompt("Extract all text from this image. Return the result as plain text.");
-        return recognizeStructured(input, mapping);
+        if (input.getImages().isEmpty()) {
+            return OcrResult.error("No images to process");
+        }
+
+        OpenAiConfig config = resolveConfig();
+        try (CloseableHttpClient client = createHttpClient(config)) {
+            HttpPost request = createRequest(config,
+                    "Extract all text from this image. Return only the extracted text.", input);
+            HttpResponse response = client.execute(request);
+            return OcrResult.text(readContent(response));
+        } catch (IOException e) {
+            Debug.logError(e, MODULE);
+            throw new OcrException("OpenAI API call failed", e);
+        }
     }
 
     @Override
@@ -92,18 +104,19 @@ public class OpenAiOcrEngine implements OcrEngine {
         }
 
         OpenAiConfig config = resolveConfig();
-
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost request = createRequest(config, mappingDefinition, input);
+        try (CloseableHttpClient client = createHttpClient(config)) {
+            HttpPost request = createRequest(config, buildPrompt(mappingDefinition), input);
             HttpResponse response = client.execute(request);
-            return parseResponse(response);
+            String content = readContent(response);
+            Map<String, Object> structuredResult = parseStructuredContent(content);
+            return OcrResult.structured(content, structuredResult);
         } catch (IOException e) {
             Debug.logError(e, MODULE);
             throw new OcrException("OpenAI API call failed", e);
         }
     }
 
-    private HttpPost createRequest(OpenAiConfig config, OcrMappingDefinition mappingDefinition, OcrInput input) throws IOException, OcrException {
+    private HttpPost createRequest(OpenAiConfig config, String prompt, OcrInput input) throws IOException, OcrException {
         HttpPost request = new HttpPost(config.baseUrl + "/chat/completions");
         request.setHeader("Content-Type", "application/json");
         if (UtilValidate.isNotEmpty(config.apiKey)) {
@@ -120,7 +133,7 @@ public class OpenAiOcrEngine implements OcrEngine {
         ArrayNode content = message.putArray("content");
         ObjectNode textContent = content.addObject();
         textContent.put("type", "text");
-        textContent.put("text", buildPrompt(mappingDefinition));
+        textContent.put("text", prompt);
 
         for (BufferedImage image : input.getImages()) {
             ObjectNode imageContent = content.addObject();
@@ -147,13 +160,22 @@ public class OpenAiOcrEngine implements OcrEngine {
         return prompt;
     }
 
+    private CloseableHttpClient createHttpClient(OpenAiConfig config) {
+        if (!config.proxy.isEnabled()) {
+            return HttpClients.createDefault();
+        }
+        HttpHost proxy = config.proxy.toHttpHost();
+        Debug.logInfo("Using proxy " + proxy.toURI() + " for OpenAI API", MODULE);
+        return HttpClients.custom().setProxy(proxy).build();
+    }
+
     private String encodeImage(BufferedImage image) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(image, "png", baos);
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    private OcrResult parseResponse(HttpResponse response) throws IOException, OcrException {
+    private String readContent(HttpResponse response) throws IOException, OcrException {
         HttpEntity entity = response.getEntity();
         String body = entity != null ? EntityUtils.toString(entity, StandardCharsets.UTF_8) : "";
 
@@ -167,13 +189,7 @@ public class OpenAiOcrEngine implements OcrEngine {
             throw new OcrException("OpenAI API response did not contain choices: " + body);
         }
 
-        String content = choices.get(0).path("message").path("content").asText();
-        if (UtilValidate.isEmpty(content)) {
-            return OcrResult.text("");
-        }
-
-        Map<String, Object> structuredResult = parseStructuredContent(content);
-        return OcrResult.structured(content, structuredResult);
+        return choices.get(0).path("message").path("content").asText("");
     }
 
     private Map<String, Object> parseStructuredContent(String content) {
@@ -202,6 +218,10 @@ public class OpenAiOcrEngine implements OcrEngine {
         OpenAiConfig config = new OpenAiConfig();
         config.baseUrl = UtilProperties.getPropertyValue(RESOURCE, "ocr.openai.baseUrl", DEFAULT_BASE_URL);
         config.model = UtilProperties.getPropertyValue(RESOURCE, "ocr.openai.model", DEFAULT_MODEL);
+        config.proxy = OpenAiProxyConfig.from(
+                UtilProperties.getPropertyValue(RESOURCE, "ocr.openai.proxyHost", ""),
+                UtilProperties.getPropertyValue(RESOURCE, "ocr.openai.proxyPort", ""),
+                UtilProperties.getPropertyValue(RESOURCE, "ocr.openai.proxyScheme", "http"));
 
         try {
             GenericValue cfg = EntityQuery.use(delegator)
@@ -235,5 +255,6 @@ public class OpenAiOcrEngine implements OcrEngine {
         String baseUrl;
         String apiKey;
         String model;
+        OpenAiProxyConfig proxy;
     }
 }

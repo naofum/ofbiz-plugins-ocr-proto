@@ -28,13 +28,14 @@ import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.UtilDateTime;
 import org.apache.ofbiz.base.util.UtilProperties;
 import org.apache.ofbiz.base.util.UtilValidate;
+import org.apache.ofbiz.content.data.DataResourceWorker;
 import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericEntityException;
 import org.apache.ofbiz.entity.GenericValue;
 import org.apache.ofbiz.entity.util.EntityQuery;
+import org.apache.ofbiz.ocr.common.OcrContentHelper;
 import org.apache.ofbiz.ocr.common.OcrEngine;
 import org.apache.ofbiz.ocr.common.OcrEngineFactory;
-import org.apache.ofbiz.ocr.common.OcrEngineType;
 import org.apache.ofbiz.ocr.common.OcrException;
 import org.apache.ofbiz.ocr.common.OcrInput;
 import org.apache.ofbiz.ocr.common.OcrInputHelper;
@@ -61,11 +62,100 @@ public class OcrServices {
         try {
             OcrInput input = OcrInputHelper.fromContentId(delegator, contentId, language);
             OcrResult result = executeEngine(dctx, input, engineTypeId, null);
+            if (result.hasError()) {
+                return ServiceUtil.returnError(result.getErrorMessage());
+            }
             String ocrRequestId = persistRequest(delegator, context, input, result, "OCRREQ_SUCCESS", persistResult);
             return buildTextResult(ocrRequestId, result);
         } catch (Exception e) {
             Debug.logError(e, MODULE);
             return ServiceUtil.returnError(e.getMessage());
+        }
+    }
+
+    public static Map<String, Object> ocrUploadToText(DispatchContext dctx, Map<String, Object> context) {
+        String contentId;
+        try {
+            contentId = storeUploadedFileContent(dctx, context);
+        } catch (OcrException e) {
+            Debug.logError(e, MODULE);
+            return ServiceUtil.returnError(e.getMessage());
+        }
+
+        Map<String, Object> ocrContext = new HashMap<>();
+        ocrContext.put("contentId", contentId);
+        ocrContext.put("engineTypeId", context.get("engineTypeId"));
+        ocrContext.put("language", context.get("language"));
+        ocrContext.put("persistResult", context.get("persistResult"));
+        ocrContext.put("userLogin", context.get("userLogin"));
+        return runOcrService(dctx, "ocrImageToText", ocrContext, contentId);
+    }
+
+    public static Map<String, Object> ocrUploadToStructuredData(DispatchContext dctx, Map<String, Object> context) {
+        String contentId;
+        try {
+            contentId = storeUploadedFileContent(dctx, context);
+        } catch (OcrException e) {
+            Debug.logError(e, MODULE);
+            return ServiceUtil.returnError(e.getMessage());
+        }
+
+        Map<String, Object> ocrContext = new HashMap<>();
+        ocrContext.put("contentId", contentId);
+        ocrContext.put("engineTypeId", context.get("engineTypeId"));
+        ocrContext.put("mappingDefinitionId", context.get("mappingDefinitionId"));
+        ocrContext.put("inlinePrompt", context.get("inlinePrompt"));
+        ocrContext.put("outputFields", context.get("outputFields"));
+        ocrContext.put("persistResult", context.get("persistResult"));
+        ocrContext.put("userLogin", context.get("userLogin"));
+        return runOcrService(dctx, "ocrImageToStructuredData", ocrContext, contentId);
+    }
+
+    private static String storeUploadedFileContent(DispatchContext dctx, Map<String, Object> context)
+            throws OcrException {
+        Delegator delegator = dctx.getDelegator();
+        ByteBuffer uploadedFile = (ByteBuffer) context.get("uploadedFile");
+        if (uploadedFile == null) {
+            throw new OcrException("Uploaded file is required");
+        }
+
+        byte[] data = new byte[uploadedFile.remaining()];
+        uploadedFile.duplicate().get(data);
+        if (data.length == 0) {
+            throw new OcrException("Uploaded file is empty");
+        }
+
+        String fileName = (String) context.get("_uploadedFile_fileName");
+        String mimeType = (String) context.get("_uploadedFile_contentType");
+        if (UtilValidate.isEmpty(mimeType) || "application/octet-stream".equalsIgnoreCase(mimeType)) {
+            try {
+                String detected = DataResourceWorker.getMimeTypeWithByteBuffer(ByteBuffer.wrap(data));
+                if (UtilValidate.isNotEmpty(detected)) {
+                    mimeType = detected;
+                }
+            } catch (Exception e) {
+                Debug.logWarning(e, "Could not detect MIME type for uploaded file", MODULE);
+            }
+        }
+
+        GenericValue userLogin = (GenericValue) context.get("userLogin");
+        String userLoginId = userLogin != null ? userLogin.getString("userLoginId") : null;
+        return OcrContentHelper.storeUploadedFile(delegator, data, fileName, mimeType, userLoginId);
+    }
+
+    private static Map<String, Object> runOcrService(DispatchContext dctx, String serviceName,
+            Map<String, Object> ocrContext, String contentId) {
+        try {
+            Map<String, Object> result = dctx.getDispatcher().runSync(serviceName, ocrContext);
+            if (ServiceUtil.isError(result)) {
+                return result;
+            }
+            Map<String, Object> output = new HashMap<>(result);
+            output.put("contentId", contentId);
+            return output;
+        } catch (Exception e) {
+            Debug.logError(e, MODULE);
+            return ServiceUtil.returnError("OCR failed: " + e.getMessage());
         }
     }
 
@@ -80,6 +170,9 @@ public class OcrServices {
         try {
             OcrInput input = OcrInputHelper.fromByteBuffer(byteBuffer, fileName, null, language);
             OcrResult result = executeEngine(dctx, input, engineTypeId, null);
+            if (result.hasError()) {
+                return ServiceUtil.returnError(result.getErrorMessage());
+            }
             String ocrRequestId = persistRequest(delegator, context, input, result, "OCRREQ_SUCCESS", persistResult);
             return buildTextResult(ocrRequestId, result);
         } catch (Exception e) {
@@ -102,6 +195,9 @@ public class OcrServices {
             OcrMappingDefinition mapping = resolveMappingDefinition(delegator, mappingDefinitionId, inlinePrompt, outputFields);
             OcrInput input = OcrInputHelper.fromContentId(delegator, contentId, null);
             OcrResult result = executeEngine(dctx, input, engineTypeId, mapping);
+            if (result.hasError()) {
+                return ServiceUtil.returnError(result.getErrorMessage());
+            }
             String ocrRequestId = persistRequest(delegator, context, input, result, "OCRREQ_SUCCESS", persistResult);
             return buildStructuredResult(ocrRequestId, result);
         } catch (Exception e) {
@@ -125,6 +221,9 @@ public class OcrServices {
             OcrMappingDefinition mapping = resolveMappingDefinition(delegator, mappingDefinitionId, inlinePrompt, outputFields);
             OcrInput input = OcrInputHelper.fromByteBuffer(byteBuffer, fileName, null, null);
             OcrResult result = executeEngine(dctx, input, engineTypeId, mapping);
+            if (result.hasError()) {
+                return ServiceUtil.returnError(result.getErrorMessage());
+            }
             String ocrRequestId = persistRequest(delegator, context, input, result, "OCRREQ_SUCCESS", persistResult);
             return buildStructuredResult(ocrRequestId, result);
         } catch (Exception e) {
@@ -137,10 +236,6 @@ public class OcrServices {
             OcrMappingDefinition mappingDefinition) throws OcrException {
         if (UtilValidate.isEmpty(engineTypeId)) {
             throw new OcrException("engineTypeId is required");
-        }
-
-        if (OcrEngineType.OPENAI.equals(engineTypeId) && mappingDefinition == null) {
-            throw new OcrException("Mapping definition is required for OPENAI structured extraction");
         }
 
         OcrEngine engine = OcrEngineFactory.getEngine(engineTypeId, dctx.getDelegator(), dctx.getDispatcher());
@@ -201,7 +296,8 @@ public class OcrServices {
         request.set("language", input.getLanguage());
         request.set("statusId", statusId);
         request.set("persistResult", persist);
-        request.set("createdByUserLoginId", context.get("userLoginId"));
+        GenericValue userLogin = (GenericValue) context.get("userLogin");
+        request.set("createdByUserLoginId", userLogin != null ? userLogin.getString("userLoginId") : context.get("userLoginId"));
         request.set("createdTxStamp", now);
         request.set("lastUpdatedTxStamp", now);
         delegator.create(request);

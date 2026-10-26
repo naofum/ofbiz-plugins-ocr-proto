@@ -35,6 +35,7 @@ under the License.
 
     <!-- demo data -->
     <entity-resource type="data" reader-name="demo" loader="main" location="data/OcrDemoData.xml"/>
+    <entity-resource type="data" reader-name="demo" loader="main" location="data/OcrSecurityGroupDemoData.xml"/>
 
     <!-- service resources -->
     <service-resource type="model" loader="main" location="servicedef/services.xml"/>

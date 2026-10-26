@@ -14,6 +14,7 @@
 - 新しい OCR エンジンを追加する場合は `OcrEngine` を実装し、`OcrEngineFactory` に登録する。
 - サービス層は `OcrServices` を中心とし、エンジン specifics はエンジン実装に閉じる。
 - ファイル入出力は `OcrInputHelper` 等の共通ヘルパーで統一し、サービスコードに直接 Content/ByteBuffer の変換ロジックを書かない。
+- WebUI のファイルアップロードは `ocrUploadToText` を使い、`OcrContentHelper` で `DataResource`（`OTHER_OBJECT`）と `Content` を保存してから `ocrImageToText` を実行する。Content 作成は `CONTENTMGR_CREATE` ではなく OCR の `OCR_CREATE` 権限で制御する。
 
 ## Data Rules
 
@@ -24,6 +25,8 @@
 ## Validation
 
 - XML 変更時は整形式を確認する。
+- Web 構成ファイルは OFBiz 同梱 Tomcat に合わせる。`web.xml` は Java EE 4.0（`http://xmlns.jcp.org/xml/ns/javaee` / `web-app_4_0.xsd`）、`controller.xml` は `http://ofbiz.apache.org/Site-Conf` 名前空間を使う。画面・フォームは `http://ofbiz.apache.org/Widget-Screen` / `http://ofbiz.apache.org/Widget-Form` 名前空間を使う。`controller.xml` の `<include>` は `<description>` / `<owner>` より前に置く。
+- サービスやイベントの出力を画面に表示するときは、スクリーンの `<actions>` で `parameters.<name>` からトップレベル項目にコピーする。`${name}` だけでは参照できない。
 - `ofbiz --test` ランナーはメインクラスパスからテストを読み込むため、テストクラスは `src/main/java/org/apache/ofbiz/ocr/test/` に配置し、`OFBizTestCase` を継承する。
 - Java/Groovy 変更時は以下を実行する。
 

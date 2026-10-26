@@ -28,4 +28,13 @@ under the License.
     <test-case case-name="ocr-mapping-definition-test">
         <junit-test-suite class-name="org.apache.ofbiz.ocr.test.OcrMappingDefinitionTest"/>
     </test-case>
+    <test-case case-name="ocr-content-helper-test">
+        <junit-test-suite class-name="org.apache.ofbiz.ocr.test.OcrContentHelperTest"/>
+    </test-case>
+    <test-case case-name="ocr-content-preview-test">
+        <junit-test-suite class-name="org.apache.ofbiz.ocr.test.OcrContentPreviewTest"/>
+    </test-case>
+    <test-case case-name="openai-proxy-config-test">
+        <junit-test-suite class-name="org.apache.ofbiz.ocr.test.OpenAiProxyConfigTest"/>
+    </test-case>
 </test-suite>

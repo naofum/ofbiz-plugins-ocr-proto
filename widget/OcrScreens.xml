@@ -20,7 +20,8 @@ under the License.
 -->
 
 <screens xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/widget-screen.xsd">
+        xmlns="http://ofbiz.apache.org/Widget-Screen"
+        xsi:schemaLocation="http://ofbiz.apache.org/Widget-Screen http://ofbiz.apache.org/dtds/widget-screen.xsd">
 
     <screen name="main">
         <section>
@@ -48,34 +49,76 @@ under the License.
                 <set field="titleProperty" value="OcrNewOcrRequest"/>
                 <set field="headerItem" value="ocr"/>
                 <set field="persistResult" value="N"/>
+                <set field="errorMessage" from-field="parameters._ERROR_MESSAGE_"/>
+                <set field="rawText" from-field="parameters.rawText"/>
+                <set field="structuredResultJson" from-field="parameters.structuredResultJson"/>
+                <set field="ocrRequestId" from-field="parameters.ocrRequestId"/>
+                <set field="contentId" from-field="parameters.contentId"/>
+                <set field="imageUrl" from-field="parameters.imageUrl"/>
+                <set field="previewMode" from-field="parameters.previewMode"/>
             </actions>
             <widgets>
                 <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
                     <decorator-section name="body">
                         <container>
                             <label style="h1" text="${uiLabelMap.OcrNewOcrRequest}"/>
+                            <label text="${uiLabelMap.OcrUploadFileHelp}"/>
+                            <label text="${uiLabelMap.OcrStructuredExtractionNote}"/>
+                            <section>
+                                <condition>
+                                    <not><if-empty field="errorMessage"/></not>
+                                </condition>
+                                <widgets>
+                                    <label text="${errorMessage}" style="alert"/>
+                                </widgets>
+                            </section>
                             <screenlet title="${uiLabelMap.OcrNewOcrRequest}">
                                 <include-form name="UploadOcrFileForm" location="component://ocr/widget/OcrForms.xml"/>
                             </screenlet>
-                        </container>
-                    </decorator-section>
-                </decorator-screen>
-            </widgets>
-        </section>
-    </screen>
-
-    <screen name="OcrResult">
-        <section>
-            <actions>
-                <set field="titleProperty" value="OcrRawText"/>
-                <set field="headerItem" value="ocr"/>
-            </actions>
-            <widgets>
-                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
-                    <decorator-section name="body">
-                        <container>
-                            <label style="h1" text="${uiLabelMap.OcrRawText}"/>
-                            <label text="${rawText}" style="alert"/>
+                            <section>
+                                <condition>
+                                    <not><if-empty field="ocrRequestId"/></not>
+                                </condition>
+                                <widgets>
+                                    <container style="lefthalf">
+                                        <screenlet title="${uiLabelMap.OcrInputPreview}">
+                                            <platform-specific>
+                                                <html>
+                                                    <html-template location="component://ocr/template/ocr/OcrInputPreview.ftl"/>
+                                                </html>
+                                            </platform-specific>
+                                        </screenlet>
+                                    </container>
+                                    <container style="righthalf">
+                                        <screenlet title="${uiLabelMap.OcrResultTitle}">
+                                            <container>
+                                                <label text="${uiLabelMap.OcrOcrRequestId}: ${ocrRequestId}"/>
+                                                <label text="${uiLabelMap.OcrStoredContentId}: ${contentId}"/>
+                                                <section>
+                                                    <condition>
+                                                        <not><if-empty field="rawText"/></not>
+                                                    </condition>
+                                                    <widgets>
+                                                        <label style="h2" text="${uiLabelMap.OcrRawText}"/>
+                                                        <label text="${rawText}" style="alert"/>
+                                                    </widgets>
+                                                </section>
+                                                <section>
+                                                    <condition>
+                                                        <not><if-empty field="structuredResultJson"/></not>
+                                                    </condition>
+                                                    <widgets>
+                                                        <label style="h2" text="${uiLabelMap.OcrStructuredResult}"/>
+                                                        <label text="${structuredResultJson}" style="alert"/>
+                                                    </widgets>
+                                                </section>
+                                                <link target="FindOcrRequests" text="${uiLabelMap.OcrOcrRequests}" style="buttontext"/>
+                                            </container>
+                                        </screenlet>
+                                    </container>
+                                    <container style="clear"/>
+                                </widgets>
+                            </section>
                         </container>
                     </decorator-section>
                 </decorator-screen>
@@ -118,39 +161,68 @@ under the License.
                         <condition-expr field-name="ocrRequestId" from-field="parameters.ocrRequestId"/>
                     </condition-list>
                 </entity-condition>
+                <entity-one entity-name="Content" value-field="ocrContent">
+                    <field-map field-name="contentId" from-field="ocrRequest.contentId"/>
+                </entity-one>
+                <set field="imageUrl" value="${groovy:ocrRequest?.contentId ? request.getContextPath() + '/control/OcrContentStream?ocrRequestId=' + ocrRequest.ocrRequestId : ''}" type="String"/>
+                <set field="previewMode" value="${groovy:org.apache.ofbiz.ocr.common.OcrContentPreview.mode(ocrContent?.mimeTypeId)}" type="String"/>
             </actions>
             <widgets>
                 <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
                     <decorator-section name="body">
                         <container>
                             <label style="h1" text="OCR Request ${parameters.ocrRequestId}"/>
-                            <label text="Engine: ${ocrRequest.engineTypeId}" style="alert"/>
-                            <label text="Status: ${ocrRequest.statusId}" style="alert"/>
-                            <section>
-                                <condition>
-                                    <not><empty field="ocrResults"/></not>
-                                </condition>
-                                <widgets>
-                                    <section>
-                                        <condition>
-                                            <not><empty field="ocrResults[0].rawText"/></not>
-                                        </condition>
-                                        <widgets>
-                                            <label style="h2" text="${uiLabelMap.OcrRawText}"/>
-                                            <label text="${ocrResults[0].rawText}" style="alert"/>
-                                        </widgets>
-                                    </section>
-                                    <section>
-                                        <condition>
-                                            <not><empty field="ocrResults[0].structuredResult"/></not>
-                                        </condition>
-                                        <widgets>
-                                            <label style="h2" text="${uiLabelMap.OcrStructuredResult}"/>
-                                            <label text="${ocrResults[0].structuredResult}" style="alert"/>
-                                        </widgets>
-                                    </section>
-                                </widgets>
-                            </section>
+                            <container style="lefthalf">
+                                <screenlet title="${uiLabelMap.OcrInputPreview}">
+                                    <platform-specific>
+                                        <html>
+                                            <html-template location="component://ocr/template/ocr/OcrInputPreview.ftl"/>
+                                        </html>
+                                    </platform-specific>
+                                </screenlet>
+                            </container>
+                            <container style="righthalf">
+                                <screenlet title="${uiLabelMap.OcrResultTitle}">
+                                    <container>
+                                        <label text="Engine: ${ocrRequest.engineTypeId}" style="alert"/>
+                                        <label text="Status: ${ocrRequest.statusId}" style="alert"/>
+                                        <section>
+                                            <condition>
+                                                <not><if-empty field="ocrResults"/></not>
+                                            </condition>
+                                            <widgets>
+                                                <section>
+                                                    <condition>
+                                                        <not><if-empty field="ocrResults[0].rawText"/></not>
+                                                    </condition>
+                                                    <widgets>
+                                                        <label style="h2" text="${uiLabelMap.OcrRawText}"/>
+                                                        <label text="${ocrResults[0].rawText}" style="alert"/>
+                                                    </widgets>
+                                                </section>
+                                                <section>
+                                                    <condition>
+                                                        <not><if-empty field="ocrResults[0].structuredResult"/></not>
+                                                    </condition>
+                                                    <widgets>
+                                                        <label style="h2" text="${uiLabelMap.OcrStructuredResult}"/>
+                                                        <label text="${ocrResults[0].structuredResult}" style="alert"/>
+                                                    </widgets>
+                                                </section>
+                                            </widgets>
+                                        </section>
+                                        <section>
+                                            <condition>
+                                                <if-empty field="ocrResults"/>
+                                            </condition>
+                                            <widgets>
+                                                <label text="${uiLabelMap.OcrResultNotPersisted}"/>
+                                            </widgets>
+                                        </section>
+                                    </container>
+                                </screenlet>
+                            </container>
+                            <container style="clear"/>
                         </container>
                     </decorator-section>
                 </decorator-screen>

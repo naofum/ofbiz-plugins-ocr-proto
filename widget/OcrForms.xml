@@ -20,23 +20,42 @@ under the License.
 -->
 
 <forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/widget-form.xsd">
+        xmlns="http://ofbiz.apache.org/Widget-Form"
+        xsi:schemaLocation="http://ofbiz.apache.org/Widget-Form http://ofbiz.apache.org/dtds/widget-form.xsd">
 
-    <form name="UploadOcrFileForm" type="single" target="RunOcr" title=""
+    <form name="UploadOcrFileForm" type="upload" target="RunOcr" title=""
           header-row-style="header-row" default-table-style="basic-table">
-        <field name="contentId" title="${uiLabelMap.OcrFileUpload}" tooltip="Upload a file first to get a Content ID">
-            <text size="40"/>
+        <field name="uploadedFile" title="${uiLabelMap.OcrFileUpload}" required-field="true"
+               tooltip="${uiLabelMap.OcrUploadFileHelp}">
+            <file size="50"/>
         </field>
         <field name="engineTypeId" title="${uiLabelMap.OcrEngineType}">
             <drop-down allow-empty="false">
-                <entity-options entity-name="Enumeration" key-field-name="enumId" description="${description}">
-                    <entity-constraint field-name="enumTypeId" operator="equals" value="OCR_ENGINE_TYPE"/>
+                <entity-options entity-name="Enumeration" key-field-name="enumCode" description="${description}">
+                    <entity-constraint name="enumTypeId" operator="equals" value="OCR_ENGINE_TYPE"/>
                     <entity-order-by field-name="description"/>
                 </entity-options>
             </drop-down>
         </field>
+        <field name="outputMode" title="${uiLabelMap.OcrOutputMode}">
+            <drop-down allow-empty="false">
+                <option key="TEXT" description="${uiLabelMap.OcrTextExtraction}"/>
+                <option key="STRUCTURED" description="${uiLabelMap.OcrStructuredExtraction}"/>
+            </drop-down>
+        </field>
+        <field name="mappingDefinitionId" title="${uiLabelMap.OcrMappingDefinition}">
+            <drop-down allow-empty="true">
+                <entity-options entity-name="OcrMappingDefinition"
+                        key-field-name="ocrMappingDefinitionId" description="${definitionName}">
+                    <entity-order-by field-name="definitionName"/>
+                </entity-options>
+            </drop-down>
+        </field>
+        <field name="inlinePrompt" title="${uiLabelMap.OcrInlinePrompt}">
+            <textarea rows="4" cols="80"/>
+        </field>
         <field name="language" title="${uiLabelMap.OcrLanguage}">
-            <text size="10"/>
+            <text size="10" default-value="eng"/>
         </field>
         <field name="persistResult" title="${uiLabelMap.OcrPersistResult}">
             <drop-down allow-empty="false">
@@ -51,11 +70,8 @@ under the License.
 
     <form name="FindOcrRequests" type="list" list-name="listIt" paginate-target="FindOcrRequests"
           header-row-style="header-row" default-table-style="basic-table">
-        <row-actions>
-            <entity-one entity-name="OcrRequest" value-field="ocrRequest"/>
-        </row-actions>
         <field name="ocrRequestId" title="Request ID">
-            <hyperlink target="EditOcrRequest" description="${ocrRequestId}" target-type="inter-app">
+            <hyperlink target="EditOcrRequest" description="${ocrRequestId}" target-type="intra-app">
                 <parameter param-name="ocrRequestId" from-field="ocrRequestId"/>
             </hyperlink>
         </field>

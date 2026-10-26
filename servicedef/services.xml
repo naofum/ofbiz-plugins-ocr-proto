@@ -26,6 +26,43 @@ under the License.
     <version>1.0</version>
 
     <!-- OCR text extraction services -->
+    <service name="ocrUploadToText" engine="java"
+            location="org.apache.ofbiz.ocr.service.OcrServices" invoke="ocrUploadToText" auth="true"
+            transaction-timeout="300">
+        <description>Store an uploaded file as Content and extract raw text</description>
+        <permission-service service-name="ocrGenericPermission" main-action="CREATE"/>
+        <attribute name="uploadedFile" type="java.nio.ByteBuffer" mode="IN" optional="false"/>
+        <attribute name="_uploadedFile_fileName" type="String" mode="IN" optional="true"/>
+        <attribute name="_uploadedFile_contentType" type="String" mode="IN" optional="true"/>
+        <attribute name="engineTypeId" type="String" mode="IN" optional="false"/>
+        <attribute name="language" type="String" mode="IN" optional="true"/>
+        <attribute name="persistResult" type="String" mode="IN" optional="true"/>
+        <attribute name="contentId" type="String" mode="OUT" optional="true"/>
+        <attribute name="ocrRequestId" type="String" mode="OUT" optional="true"/>
+        <attribute name="rawText" type="String" mode="OUT" optional="true"/>
+        <attribute name="errorMessage" type="String" mode="OUT" optional="true"/>
+    </service>
+
+    <service name="ocrUploadToStructuredData" engine="java"
+            location="org.apache.ofbiz.ocr.service.OcrServices" invoke="ocrUploadToStructuredData" auth="true"
+            transaction-timeout="300">
+        <description>Store an uploaded file as Content and extract structured data</description>
+        <permission-service service-name="ocrGenericPermission" main-action="CREATE"/>
+        <attribute name="uploadedFile" type="java.nio.ByteBuffer" mode="IN" optional="false"/>
+        <attribute name="_uploadedFile_fileName" type="String" mode="IN" optional="true"/>
+        <attribute name="_uploadedFile_contentType" type="String" mode="IN" optional="true"/>
+        <attribute name="engineTypeId" type="String" mode="IN" optional="false"/>
+        <attribute name="mappingDefinitionId" type="String" mode="IN" optional="true"/>
+        <attribute name="inlinePrompt" type="String" mode="IN" optional="true"/>
+        <attribute name="outputFields" type="List" mode="IN" optional="true"/>
+        <attribute name="persistResult" type="String" mode="IN" optional="true"/>
+        <attribute name="contentId" type="String" mode="OUT" optional="true"/>
+        <attribute name="ocrRequestId" type="String" mode="OUT" optional="true"/>
+        <attribute name="rawText" type="String" mode="OUT" optional="true"/>
+        <attribute name="structuredResult" type="Map" mode="OUT" optional="true"/>
+        <attribute name="errorMessage" type="String" mode="OUT" optional="true"/>
+    </service>
+
     <service name="ocrImageToText" engine="java"
             location="org.apache.ofbiz.ocr.service.OcrServices" invoke="ocrImageToText" auth="true">
         <description>Extract raw text from an image or PDF referenced by Content ID</description>

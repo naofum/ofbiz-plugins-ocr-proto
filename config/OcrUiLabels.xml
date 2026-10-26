@@ -58,6 +58,30 @@ under the License.
         <value xml:lang="en">Persist Result</value>
         <value xml:lang="ja">結果を保存</value>
     </property>
+    <property key="OcrOutputMode">
+        <value xml:lang="en">Output Mode</value>
+        <value xml:lang="ja">出力種別</value>
+    </property>
+    <property key="OcrTextExtraction">
+        <value xml:lang="en">Text Extraction</value>
+        <value xml:lang="ja">テキスト抽出</value>
+    </property>
+    <property key="OcrStructuredExtraction">
+        <value xml:lang="en">Structured Extraction</value>
+        <value xml:lang="ja">構造化抽出</value>
+    </property>
+    <property key="OcrInlinePrompt">
+        <value xml:lang="en">Inline Prompt</value>
+        <value xml:lang="ja">インラインプロンプト</value>
+    </property>
+    <property key="OcrStructuredExtractionNote">
+        <value xml:lang="en">Structured extraction requires OPENAI or BOTH, and either a mapping definition or an inline prompt.</value>
+        <value xml:lang="ja">構造化抽出には OPENAI または BOTH と、マッピング定義またはインラインプロンプトが必要です。</value>
+    </property>
+    <property key="OcrResultTitle">
+        <value xml:lang="en">OCR Result</value>
+        <value xml:lang="ja">OCR 結果</value>
+    </property>
     <property key="OcrRunOcr">
         <value xml:lang="en">Run OCR</value>
         <value xml:lang="ja">OCR 実行</value>
@@ -65,6 +89,42 @@ under the License.
     <property key="OcrFileUpload">
         <value xml:lang="en">File Upload</value>
         <value xml:lang="ja">ファイルアップロード</value>
+    </property>
+    <property key="OcrUploadFileHelp">
+        <value xml:lang="en">Select an image or PDF file. The uploaded file is stored as Content and then processed by OCR.</value>
+        <value xml:lang="ja">画像または PDF ファイルを選択してください。アップロードしたファイルは Content として保存され、OCR 処理されます。</value>
+    </property>
+    <property key="OcrOcrRequestId">
+        <value xml:lang="en">OCR Request ID</value>
+        <value xml:lang="ja">OCR 実行 ID</value>
+    </property>
+    <property key="OcrStoredContentId">
+        <value xml:lang="en">Stored Content ID</value>
+        <value xml:lang="ja">保存した Content ID</value>
+    </property>
+    <property key="OcrInputPreview">
+        <value xml:lang="en">Input Preview</value>
+        <value xml:lang="ja">入力プレビュー</value>
+    </property>
+    <property key="OcrOpenOriginalFile">
+        <value xml:lang="en">Open Original File</value>
+        <value xml:lang="ja">元ファイルを開く</value>
+    </property>
+    <property key="OcrDownloadOriginalFile">
+        <value xml:lang="en">Download Original File</value>
+        <value xml:lang="ja">元ファイルをダウンロード</value>
+    </property>
+    <property key="OcrPreviewUnavailable">
+        <value xml:lang="en">This file type cannot be previewed in the browser.</value>
+        <value xml:lang="ja">このファイル形式はブラウザでプレビューできません。</value>
+    </property>
+    <property key="OcrNoInputImage">
+        <value xml:lang="en">No input image is available for this request.</value>
+        <value xml:lang="ja">この実行には入力画像がありません。</value>
+    </property>
+    <property key="OcrResultNotPersisted">
+        <value xml:lang="en">No result is stored for this request.</value>
+        <value xml:lang="ja">この実行の結果は保存されていません。</value>
     </property>
     <property key="OcrInvoiceExtraction">
         <value xml:lang="en">Invoice Extraction</value>
