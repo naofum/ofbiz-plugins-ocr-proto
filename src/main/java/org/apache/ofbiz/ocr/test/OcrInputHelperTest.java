@@ -33,7 +33,7 @@ import org.apache.ofbiz.service.testtools.OFBizTestCase;
 /**
  * Tests for OcrInputHelper.
  */
-public class OcrInputHelperTest extends OFBizTestCase {
+public final class OcrInputHelperTest extends OFBizTestCase {
 
     public OcrInputHelperTest(String name) {
         super(name);

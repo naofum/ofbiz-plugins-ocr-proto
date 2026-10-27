@@ -22,9 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,7 +203,7 @@ public class OpenAiOcrEngine implements OcrEngine {
         cleaned = cleaned.trim();
 
         try {
-            return objectMapper.readValue(cleaned, new TypeReference<Map<String, Object>>() {});
+            return objectMapper.readValue(cleaned, new TypeReference<Map<String, Object>>() { });
         } catch (IOException e) {
             Debug.logWarning("Could not parse OpenAI response as JSON: " + content, MODULE);
             Map<String, Object> fallback = new HashMap<>();
@@ -252,9 +250,9 @@ public class OpenAiOcrEngine implements OcrEngine {
     }
 
     private static class OpenAiConfig {
-        String baseUrl;
-        String apiKey;
-        String model;
-        OpenAiProxyConfig proxy;
+        private String baseUrl;
+        private String apiKey;
+        private String model;
+        private OpenAiProxyConfig proxy;
     }
 }

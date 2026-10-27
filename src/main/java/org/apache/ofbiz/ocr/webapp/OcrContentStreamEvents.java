@@ -43,7 +43,7 @@ public final class OcrContentStreamEvents {
 
     private static final String MODULE = OcrContentStreamEvents.class.getName();
 
-    private OcrContentStreamEvents() {}
+    private OcrContentStreamEvents() { }
 
     /**
      * Serves the Content/DataResource linked to an OCR request.

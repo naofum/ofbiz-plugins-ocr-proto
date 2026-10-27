@@ -34,7 +34,7 @@ public final class OcrContentHelper {
 
     private static final String MODULE = OcrContentHelper.class.getName();
 
-    private OcrContentHelper() {}
+    private OcrContentHelper() { }
 
     /**
      * Stores binary data as a DataResource (OTHER_OBJECT) and Content record.

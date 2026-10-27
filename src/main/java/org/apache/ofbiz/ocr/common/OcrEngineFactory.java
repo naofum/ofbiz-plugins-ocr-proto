@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.ofbiz.base.util.UtilValidate;
 import org.apache.ofbiz.entity.Delegator;
-import org.apache.ofbiz.entity.GenericValue;
 import org.apache.ofbiz.ocr.openai.OpenAiOcrEngine;
 import org.apache.ofbiz.ocr.tesseract.TesseractOcrEngine;
 import org.apache.ofbiz.service.LocalDispatcher;
@@ -31,11 +30,11 @@ import org.apache.ofbiz.service.LocalDispatcher;
 /**
  * Factory for resolving OCR engine instances.
  */
-public class OcrEngineFactory {
+public final class OcrEngineFactory {
 
     private static final Map<String, OcrEngine> ENGINES = new ConcurrentHashMap<>();
 
-    private OcrEngineFactory() {}
+    private OcrEngineFactory() { }
 
     public static OcrEngine getEngine(String engineTypeId, Delegator delegator, LocalDispatcher dispatcher) throws OcrException {
         if (UtilValidate.isEmpty(engineTypeId)) {

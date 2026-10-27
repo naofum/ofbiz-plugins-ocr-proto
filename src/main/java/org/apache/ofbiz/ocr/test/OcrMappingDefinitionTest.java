@@ -27,7 +27,7 @@ import org.apache.ofbiz.service.testtools.OFBizTestCase;
 /**
  * Tests for OcrMappingDefinition.
  */
-public class OcrMappingDefinitionTest extends OFBizTestCase {
+public final class OcrMappingDefinitionTest extends OFBizTestCase {
 
     public OcrMappingDefinitionTest(String name) {
         super(name);

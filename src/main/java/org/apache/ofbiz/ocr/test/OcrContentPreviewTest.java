@@ -24,7 +24,7 @@ import org.apache.ofbiz.service.testtools.OFBizTestCase;
 /**
  * Tests for OcrContentPreview.
  */
-public class OcrContentPreviewTest extends OFBizTestCase {
+public final class OcrContentPreviewTest extends OFBizTestCase {
 
     public OcrContentPreviewTest(String name) {
         super(name);

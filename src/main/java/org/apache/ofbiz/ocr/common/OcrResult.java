@@ -19,13 +19,12 @@
 package org.apache.ofbiz.ocr.common;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Result of an OCR operation.
  */
-public class OcrResult {
+public final class OcrResult {
 
     private String rawText;
     private Map<String, Object> structuredResult;

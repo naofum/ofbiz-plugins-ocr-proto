@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Helper for OcrMappingDefinition entity data.
  */
-public class OcrMappingDefinition {
+public final class OcrMappingDefinition {
 
     private String mappingDefinitionId;
     private String definitionName;
@@ -79,7 +79,7 @@ public class OcrMappingDefinition {
         }
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(outputFieldsJson, new TypeReference<List<Map<String, Object>>>() {});
+            return mapper.readValue(outputFieldsJson, new TypeReference<List<Map<String, Object>>>() { });
         } catch (Exception e) {
             return Collections.emptyList();
         }

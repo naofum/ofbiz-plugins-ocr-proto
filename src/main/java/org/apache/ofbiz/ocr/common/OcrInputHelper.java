@@ -39,11 +39,11 @@ import org.apache.ofbiz.ocr.util.PdfToImageConverter;
 /**
  * Helper for building OcrInput from various sources.
  */
-public class OcrInputHelper {
+public final class OcrInputHelper {
 
     private static final String MODULE = OcrInputHelper.class.getName();
 
-    private OcrInputHelper() {}
+    private OcrInputHelper() { }
 
     public static OcrInput fromContentId(Delegator delegator, String contentId, String language) throws OcrException {
         if (UtilValidate.isEmpty(contentId)) {

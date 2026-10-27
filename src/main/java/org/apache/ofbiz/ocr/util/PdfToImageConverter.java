@@ -35,7 +35,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  */
 public final class PdfToImageConverter {
 
-    private PdfToImageConverter() {}
+    private PdfToImageConverter() { }
 
     /**
      * Converts a PDF input stream to a list of BufferedImages (one per page).

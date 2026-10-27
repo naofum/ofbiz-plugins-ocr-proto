@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Input data for an OCR engine.
  */
-public class OcrInput {
+public final class OcrInput {
 
     private List<BufferedImage> images;
     private String mimeType;

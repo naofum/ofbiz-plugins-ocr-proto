@@ -18,8 +18,6 @@
  */
 package org.apache.ofbiz.ocr.common;
 
-import java.util.Map;
-
 /**
  * Common interface for OCR engines.
  */

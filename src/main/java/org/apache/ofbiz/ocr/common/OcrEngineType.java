@@ -23,7 +23,7 @@ package org.apache.ofbiz.ocr.common;
  */
 public final class OcrEngineType {
 
-    private OcrEngineType() {}
+    private OcrEngineType() { }
 
     public static final String TESSERACT = "TESSERACT";
     public static final String OPENAI = "OPENAI";

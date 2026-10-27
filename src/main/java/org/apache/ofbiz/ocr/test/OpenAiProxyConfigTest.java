@@ -26,7 +26,7 @@ import org.apache.ofbiz.service.testtools.OFBizTestCase;
 /**
  * Tests for OpenAiProxyConfig.
  */
-public class OpenAiProxyConfigTest extends OFBizTestCase {
+public final class OpenAiProxyConfigTest extends OFBizTestCase {
 
     public OpenAiProxyConfigTest(String name) {
         super(name);

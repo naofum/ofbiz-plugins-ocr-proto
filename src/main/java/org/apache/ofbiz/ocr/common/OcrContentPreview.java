@@ -29,7 +29,7 @@ public final class OcrContentPreview {
     public static final String MODE_PDF = "PDF";
     public static final String MODE_OTHER = "OTHER";
 
-    private OcrContentPreview() {}
+    private OcrContentPreview() { }
 
     /**
      * Returns the preview mode for a MIME type.

@@ -19,8 +19,6 @@
 package org.apache.ofbiz.ocr.tesseract;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.Collections;
 
 import org.apache.ofbiz.base.util.Debug;
 import org.apache.ofbiz.base.util.UtilProperties;

@@ -47,7 +47,7 @@ public final class OcrUploadEvents {
     private static final String MODULE = OcrUploadEvents.class.getName();
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private OcrUploadEvents() {}
+    private OcrUploadEvents() { }
 
     /**
      * Runs the upload service and exposes its outputs to the result screen.
